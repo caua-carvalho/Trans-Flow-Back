@@ -14,11 +14,11 @@ class Database {
 
     public function __construct()
     {
-        $this->host = getenv('DB_HOST') !== false ? getenv('DB_HOST') : 'localhost';
+        $this->host = getenv('DB_HOST') !== false ? getenv('DB_HOST') : 'dpg-d3sc29re5dus73e0ngmg-a.oregon-postgres.render.com';
         $this->port = getenv('DB_PORT') !== false ? getenv('DB_PORT') : '5432';
-        $this->db = getenv('DB_NAME') !== false ? getenv('DB_NAME') : 'transflow';
-        $this->user = getenv('DB_USER') !== false ? getenv('DB_USER') : 'root';
-        $this->password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+        $this->db = getenv('DB_NAME') !== false ? getenv('DB_NAME') : 'trans_flow';
+        $this->user = getenv('DB_USER') !== false ? getenv('DB_USER') : 'trans_flow_user';
+        $this->password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : 'Gkg0LiqDETtkzRpKjRPbyPPCaZOqi6by';
     }
 
     public function connect() {

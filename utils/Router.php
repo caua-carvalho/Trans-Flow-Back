@@ -10,9 +10,15 @@ class Router {
 
     public function __construct() {
         $this->method = $_SERVER['REQUEST_METHOD'];
-        $this->path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        // Remove a base path se necessário
-        $this->path = str_replace('/api', '', $this->path);
+
+        // normaliza tudo pra minúsculo
+        $requestUri = strtolower(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+        $scriptName = strtolower(str_replace('\\', '/', $_SERVER['SCRIPT_NAME']));
+
+        $basePath = dirname($scriptName);
+
+        $this->path = preg_replace('#^' . $basePath . '#', '', $requestUri);
+
         if ($this->path === '') {
             $this->path = '/';
         }
@@ -32,9 +38,33 @@ class Router {
                 return call_user_func($route['callback']);
             }
         }
-        http_response_code(404);
-        echo json_encode(['success' => false, 'error' => 'Endpoint não encontrado']);
+
+        // DEBUG EXTRA COMPLETO
+        $debug = [
+            "success" => false,
+            "error" => "Endpoint não encontrado",
+            "php" => [
+                "REQUEST_URI" => $_SERVER['REQUEST_URI'] ?? null,
+                "SCRIPT_NAME" => $_SERVER['SCRIPT_NAME'] ?? null,
+                "SCRIPT_FILENAME" => $_SERVER['SCRIPT_FILENAME'] ?? null,
+                "DOCUMENT_ROOT" => $_SERVER['DOCUMENT_ROOT'] ?? null,
+                "method" => $this->method,
+            ],
+            "router" => [
+                "calculatedPath" => $this->path,
+                "registeredRoutes" => array_map(function($r) {
+                    return [
+                        "method" => $r['method'],
+                        "pattern" => $r['pattern']
+                    ];
+                }, $this->routes)
+            ]
+        ];
+
+        header("Content-Type: application/json");
+        echo json_encode($debug, JSON_PRETTY_PRINT);
     }
+
 
     private function matchPattern($pattern) {
         $regex = preg_replace('/\{([a-z_]+)\}/', '(?P<\1>[^/]+)', $pattern);
