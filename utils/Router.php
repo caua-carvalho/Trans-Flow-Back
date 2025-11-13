@@ -11,18 +11,25 @@ class Router {
     public function __construct() {
         $this->method = $_SERVER['REQUEST_METHOD'];
 
-        // normaliza tudo pra minúsculo
+        // normaliza barras e deixa tudo minúsculo
         $requestUri = strtolower(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
         $scriptName = strtolower(str_replace('\\', '/', $_SERVER['SCRIPT_NAME']));
 
-        $basePath = dirname($scriptName);
+        // pega só o diretório do script
+        $basePath = rtrim(dirname($scriptName), '/');
 
-        $this->path = preg_replace('#^' . $basePath . '#', '', $requestUri);
+        // remove o basePath do início da URI
+        if ($basePath !== '' && $basePath !== '/') {
+            $this->path = preg_replace('#^' . preg_quote($basePath, '#') . '#', '', $requestUri);
+        } else {
+            $this->path = $requestUri;
+        }
 
         if ($this->path === '') {
             $this->path = '/';
         }
-    }
+}
+
 
     public function route($method, $pattern, $callback) {
         $this->routes[] = [
