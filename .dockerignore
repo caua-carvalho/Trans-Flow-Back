@@ -1,0 +1,12 @@
+node_modules
+vendor
+.git
+.env
+.vscode
+*.log
+tmp
+dist
+build
+README.md
+*.md
+/.github

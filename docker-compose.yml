@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: transflow_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html:cached
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=transflow
+      - DB_USER=root
+      - DB_PASS=root
+    depends_on:
+      - db

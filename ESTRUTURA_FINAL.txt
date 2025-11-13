@@ -1,0 +1,456 @@
+TRANSFLOW v2.0 - ESTRUTURA FINAL
+═════════════════════════════════════════════════════════════════════════════
+
+BANCO DE DADOS REDESENHADO
+═════════════════════════════════════════════════════════════════════════════
+
+sql/create_tables.sql (291 linhas)
+  ├── TABELAS PRINCIPAIS (15)
+  │
+  ├─ 1. centros_distribuicao
+  │     id, codigo, nome, endereco, capacidade_maxima, status
+  │     Índices: idx_cd_status
+  │
+  ├─ 2. localizacoes_cd
+  │     id, cd_id, codigo, zona, corredor, prateleira, posicao
+  │     UNIQUE(cd_id, zona, corredor, prateleira, posicao)
+  │     Índices: idx_localizacoes_cd, idx_localizacoes_status
+  │
+  ├─ 3. fornecedores
+  │     id, codigo, nome, endereco, telefone, email, status
+  │
+  ├─ 4. clientes
+  │     id, codigo, nome, endereco, telefone, email, status
+  │
+  ├─ 5. lotes ⭐ [CHEGADA NO PORTO]
+  │     id, codigo, codigo_barras (UNIQUE)
+  │     fornecedor_id, status, quantidade_total
+  │     data_chegada_porto, data_movimentacao
+  │     Índices: idx_lotes_status, idx_lotes_codigo_barras, 
+  │              idx_lotes_fornecedor, idx_lotes_data_chegada
+  │
+  ├─ 6. sublotes ⭐ [SEPARAÇÃO]
+  │     id, codigo, codigo_barras (UNIQUE)
+  │     lote_id (FK CASCADE), cd_id
+  │     status, quantidade_total, quantidade_armazenada
+  │     Índices: idx_sublotes_lote, idx_sublotes_cd, 
+  │              idx_sublotes_status, idx_sublotes_codigo_barras
+  │
+  ├─ 7. produtos ⭐ [PRODUTO INDIVIDUAL]
+  │     id, codigo, codigo_barras (UNIQUE)
+  │     nome, descricao, sublote_id
+  │     status (11 valores), data_criacao
+  │     Índices: idx_produtos_status, idx_produtos_codigo_barras, idx_produtos_sublote
+  │
+  ├─ 8. estoque_cd [ARMAZENAMENTO NO CD]
+  │     id, produto_id (FK CASCADE), localizacao_id
+  │     cd_id (FK CASCADE)
+  │     status, quantidade, data_armazenamento
+  │     UNIQUE(produto_id, cd_id)
+  │     Índices: idx_estoque_produto, idx_estoque_cd, 
+  │              idx_estoque_localizacao, idx_estoque_status
+  │
+  ├─ 9. pedidos [PEDIDO DO CLIENTE]
+  │     id, numero_pedido (UNIQUE)
+  │     cliente_id, cd_id
+  │     status (7 valores), data_pedido, data_entrega
+  │     Índices: idx_pedidos_numero, idx_pedidos_cliente, idx_pedidos_status, 
+  │              idx_pedidos_cd, idx_pedidos_data
+  │
+  ├─ 10. itens_pedido [ITENS DO PEDIDO]
+  │      id, pedido_id (FK CASCADE), produto_id
+  │      quantidade, status, data_separacao
+  │
+  ├─ 11. envios ⭐ [ENVIO COM RASTREAMENTO]
+  │      id, numero_envio (UNIQUE), codigo_barras_envio (UNIQUE)
+  │      pedido_id (FK CASCADE), cd_id, cliente_id
+  │      status, transportadora, numero_rastreamento
+  │      data_saida_cd, data_entrega
+  │      Índices: idx_envios_numero, idx_envios_pedido, idx_envios_status,
+  │               idx_envios_codigo_barras, idx_envios_rastreamento
+  │
+  ├─ 12. logistica_reversa [DEVOLUÇÕES E DEFEITOS]
+  │      id, numero_devolucao (UNIQUE)
+  │      produto_id, pedido_id, cliente_id
+  │      motivo (4 valores), status (9 valores)
+  │      resultado_analise, cd_destino_id
+  │      Índices: idx_reversa_numero, idx_reversa_status, 
+  │               idx_reversa_produto, idx_reversa_cliente
+  │
+  ├─ 13. movimentacoes [LOG DE MOVIMENTAÇÕES]
+  │      id, produto_id (FK CASCADE)
+  │      tipo_movimentacao, localizacao_origem, localizacao_destino
+  │      cd_origem_id, cd_destino_id, data_movimentacao
+  │
+  ├─ 14. historico [AUDITORIA]
+  │      id, tipo_entidade, id_entidade, codigo_entidade
+  │      acao, status_anterior, status_novo
+  │      localizacao_anterior, localizacao_nova
+  │      usuario, detalhes (JSON), data_evento
+  │      Índices: idx_historico_tipo, idx_historico_id_entidade, idx_historico_data
+  │
+  └─ 15. usuarios [USUÁRIOS DO SISTEMA]
+       id, nome, email (UNIQUE), senha
+       tipo_usuario (3 valores), status
+
+═════════════════════════════════════════════════════════════════════════════
+
+DOCUMENTAÇÃO CRIADA
+═════════════════════════════════════════════════════════════════════════════
+
+📚 Arquivos de Documentação v2.0:
+
+00-COMECE-AQUI.md
+  └─ Sumário executivo (~300 linhas)
+     • O que foi feito
+     • Por onde começar
+     • Links para outros documentos
+     • Status do projeto
+
+SCHEMA_v2.md
+  └─ Documentação completa (~2500 linhas)
+     • Todas as 15 tabelas
+     • Campos de cada tabela
+     • Relacionamentos
+     • Índices
+     • Exemplo de queries
+     • Status values de cada tabela
+
+FLUXO_COMPLETO.md
+  └─ Processo completo (400 linhas)
+     • 9 etapas do fluxo logístico
+     • Diagramas ASCII
+     • Status em cada etapa
+     • Exemplos de dados
+     • Rastreamento em tempo real
+
+IMPLEMENTACAO_CONTROLLERS.md
+  └─ Guia de implementação (600 linhas)
+     • Padrão de controller
+     • Métodos obrigatórios
+     • Exemplo completo: CentrosDistribuicaoController
+     • Padrão de rotas
+     • Padrão de validação
+     • Padrão de logging
+
+RESUMO_SCHEMA_V2.md
+  └─ Comparação e roadmap (~500 linhas)
+     • Comparação v1.0 vs v2.0
+     • Tabelas adicionadas
+     • Melhorias implementadas
+     • Roadmap de implementação
+
+STATUS.md
+  └─ Status atual do projeto (este arquivo)
+     • O que foi concluído
+     • O que falta implementar
+     • Checklist de tarefas
+     • Próximos passos
+
+═════════════════════════════════════════════════════════════════════════════
+
+PADRÕES DE CÓDIGO ESTABELECIDOS
+═════════════════════════════════════════════════════════════════════════════
+
+Cada Controller deve ter:
+
+class XYZController {
+  
+  public function getAll() {
+    // GET /api/xyz
+    // Retorna lista com opção de filtros
+    // Implementar paginação opcional
+  }
+  
+  public function getById($id) {
+    // GET /api/xyz/{id}
+    // Retorna um registro com dados relacionados
+    // Incluir informações do histórico
+  }
+  
+  public function create() {
+    // POST /api/xyz
+    // Valida dados
+    // Insere no banco
+    // Registra no histórico
+    // Retorna 201 Created
+  }
+  
+  public function update($id) {
+    // PUT /api/xyz/{id}
+    // Valida dados
+    // Atualiza registro
+    // Registra mudanças no histórico
+    // Retorna 200 OK
+  }
+  
+  public function delete($id) {
+    // DELETE /api/xyz/{id}
+    // Valida se pode deletar
+    // Deleta registro (com cascata)
+    // Registra deleção no histórico
+    // Retorna 200 OK ou 204 No Content
+  }
+  
+  private function logHistory($tipo, $acao, $dados) {
+    // Registra no histórico automaticamente
+    // tipo_entidade, id_entidade, acao
+    // status_anterior, status_novo
+    // usuario, data_evento
+  }
+}
+
+═════════════════════════════════════════════════════════════════════════════
+
+CONTROLLERS A IMPLEMENTAR (16 TOTAL)
+═════════════════════════════════════════════════════════════════════════════
+
+GRUPO 1: BASE (5 controllers)
+├─ CentrosDistribuicaoController
+│  └─ Gerenciar CDs (criar, listar, atualizar, deletar)
+│  └─ Validar capacidade máxima
+│  └─ Consultar estoque por CD
+│  └─ Exemplo fornecido em IMPLEMENTACAO_CONTROLLERS.md
+│
+├─ FornecedoresController
+│  └─ Gerenciar fornecedores
+│  └─ Consultar lotes por fornecedor
+│
+├─ ClientesController
+│  └─ Gerenciar clientes
+│  └─ Consultar pedidos por cliente
+│
+├─ LotesController
+│  └─ Gerenciar lotes (atualizar de v1.0)
+│  └─ Adicionar campos: codigo_barras, fornecedor_id
+│  └─ Status: em_porto, separacao_em_processo, separado, finalizado
+│  └─ Consultar produtos do lote
+│
+└─ ProdutosController
+   └─ Gerenciar produtos (atualizar de v1.0)
+   └─ Adicionar campos: codigo_barras, sublote_id
+   └─ Status: em_porto, em_separacao, em_transito, armazenado, etc
+   └─ Consultar localização atual
+
+GRUPO 2: ARMAZENAMENTO (4 controllers)
+├─ LocalizacoesCDController
+│  └─ Gerenciar localizações (Zona/Corredor/Prateleira/Posição)
+│  └─ Validar capacidade de cada localização
+│  └─ Consultar produtos por localização
+│
+├─ SublotesController
+│  └─ Gerenciar sublotes (separações)
+│  └─ Status: em_separacao, em_transito_cd, chegou_cd, em_armazenamento, armazenado
+│  └─ Movimentação de produtos entre CDs
+│  └─ Rastreamento por código de barras
+│
+├─ EstoqueCDController
+│  └─ Rastreamento de estoque por CD
+│  └─ Consultar produtos em armazenamento
+│  └─ Status: armazenado, reservado, movimentando
+│  └─ Relatórios de ocupação
+│
+└─ MovimentacoesController
+   └─ Log de movimentações (leitura e análise)
+   └─ Filtrar por produto, tipo, data, CD
+   └─ Relatório de movimentações
+
+GRUPO 3: PEDIDOS (3 controllers)
+├─ PedidosController
+│  └─ Gerenciar pedidos dos clientes
+│  └─ Status: pendente_preparacao, preparacao_em_processo, pronto_para_envio,
+│            enviado, em_entrega, entregue, cancelado
+│  └─ Consultar itens do pedido
+│  └─ Rastreamento completo
+│
+├─ ItensPedidoController
+│  └─ Gerenciar itens do pedido
+│  └─ Status: pendente_separacao, em_separacao, separado, preparado
+│  └─ Validar disponibilidade
+│
+└─ EnviosController
+   └─ Gerenciar envios (com rastreamento)
+   └─ Código de barras único por envio
+   └─ Integração com transportadora
+   └─ Status: preparado_para_envio, coletado, em_transito, entregue, falha_entrega
+
+GRUPO 4: LOGÍSTICA REVERSA (1 controller)
+└─ LogisticaReversaController
+   └─ Gerenciar devoluções e defeitos
+   └─ Status: solicitado, coletando, coletado, em_transito_reversa, recebido_cd,
+            em_analise, defeito_confirmado, defeito_nao_confirmado, resolvido
+   └─ Análise de defeitos
+   └─ Gestão de reembolsos/trocas
+
+GRUPO 5: ANÁLISE (3 controllers)
+├─ RastreamentoController (NOVO)
+│  └─ GET /api/rastreamento/barcode/{codigo}
+│  └─ GET /api/rastreamento/produto/{id}
+│  └─ GET /api/rastreamento/pedido/{numero}
+│  └─ Retorna histórico completo e localização atual
+│
+├─ HistoricoController (ATUALIZAR)
+│  └─ Listar histórico com filtros
+│  └─ Novo schema: tipo_entidade, id_entidade, acao
+│  └─ Export em CSV/JSON
+│
+└─ DashboardController (ATUALIZAR)
+   └─ Métricas novas baseadas no v2.0
+   └─ Lotes em processamento
+   └─ Produtos em armazenamento por CD
+   └─ Pedidos pendentes
+   └─ Taxa de defeitos
+   └─ Performance de entrega
+
+═════════════════════════════════════════════════════════════════════════════
+
+ROTEIROS DE IMPLEMENTAÇÃO
+═════════════════════════════════════════════════════════════════════════════
+
+ROTEIRO 1: COMECE PELO MAIS SIMPLES
+1. CentrosDistribuicaoController (sem dependências)
+2. FornecedoresController (sem dependências)
+3. ClientesController (sem dependências)
+4. LocalizacoesCDController (depende só de CentrosDistribuicao)
+5. [Continue com os outros...]
+
+ROTEIRO 2: COMECE PELO FLUXO
+1. LotesController (entrada)
+2. SublotesController (separação)
+3. EstoqueCDController (armazenamento)
+4. PedidosController (saída)
+5. EnviosController (envio)
+6. LogisticaReversaController (retorno)
+7. [Continue com análise...]
+
+ROTEIRO 3: IMPLEMENTAÇÃO PARALELA (2-3 pessoas)
+Person 1: Grupo 1 (Base) - 5 controllers
+Person 2: Grupo 2 (Armazenamento) + Grupo 3 (Pedidos) - 7 controllers
+Person 3: Grupo 4 + 5 (Reversa + Análise) - 4 controllers
+
+═════════════════════════════════════════════════════════════════════════════
+
+ENDPOINTS A CRIAR (40+ NOVOS)
+═════════════════════════════════════════════════════════════════════════════
+
+CENTROS DE DISTRIBUIÇÃO (6 endpoints)
+GET    /api/centros-distribuicao
+POST   /api/centros-distribuicao
+GET    /api/centros-distribuicao/{id}
+PUT    /api/centros-distribuicao/{id}
+DELETE /api/centros-distribuicao/{id}
+GET    /api/centros-distribuicao/{id}/estoque
+
+FORNECEDORES (6 endpoints)
+GET    /api/fornecedores
+POST   /api/fornecedores
+GET    /api/fornecedores/{id}
+PUT    /api/fornecedores/{id}
+DELETE /api/fornecedores/{id}
+GET    /api/fornecedores/{id}/lotes
+
+CLIENTES (6 endpoints)
+GET    /api/clientes
+POST   /api/clientes
+GET    /api/clientes/{id}
+PUT    /api/clientes/{id}
+DELETE /api/clientes/{id}
+GET    /api/clientes/{id}/pedidos
+
+LOCALIZAÇÕES CD (6 endpoints)
+GET    /api/localizacoes
+POST   /api/localizacoes
+GET    /api/localizacoes/{id}
+PUT    /api/localizacoes/{id}
+DELETE /api/localizacoes/{id}
+GET    /api/localizacoes/{id}/produtos
+
+SUBLOTES (6 endpoints)
+GET    /api/sublotes
+POST   /api/sublotes
+GET    /api/sublotes/{id}
+PUT    /api/sublotes/{id}
+DELETE /api/sublotes/{id}
+GET    /api/sublotes/{id}/produtos
+
+ESTOQUE CD (6 endpoints)
+GET    /api/estoque
+POST   /api/estoque
+GET    /api/estoque/{id}
+PUT    /api/estoque/{id}
+DELETE /api/estoque/{id}
+GET    /api/estoque/cd/{cd_id}
+
+PEDIDOS (8 endpoints)
+GET    /api/pedidos
+POST   /api/pedidos
+GET    /api/pedidos/{id}
+PUT    /api/pedidos/{id}
+DELETE /api/pedidos/{id}
+PATCH  /api/pedidos/{id}/status
+GET    /api/pedidos/{id}/itens
+GET    /api/pedidos/{id}/envios
+
+ITENS PEDIDO (6 endpoints)
+GET    /api/itens-pedido
+POST   /api/itens-pedido
+GET    /api/itens-pedido/{id}
+PUT    /api/itens-pedido/{id}
+DELETE /api/itens-pedido/{id}
+GET    /api/pedidos/{pedido_id}/itens
+
+ENVIOS (8 endpoints)
+GET    /api/envios
+POST   /api/envios
+GET    /api/envios/{id}
+PUT    /api/envios/{id}
+DELETE /api/envios/{id}
+PATCH  /api/envios/{id}/status
+GET    /api/envios/{id}/rastreamento
+GET    /api/envios/numero/{numero}
+
+LOGÍSTICA REVERSA (8 endpoints)
+GET    /api/devolucoes
+POST   /api/devolucoes
+GET    /api/devolucoes/{id}
+PUT    /api/devolucoes/{id}
+DELETE /api/devolucoes/{id}
+PATCH  /api/devolucoes/{id}/status
+GET    /api/devolucoes/{id}/analise
+POST   /api/devolucoes/{id}/analise
+
+MOVIMENTAÇÕES (4 endpoints)
+GET    /api/movimentacoes
+GET    /api/movimentacoes/{id}
+GET    /api/movimentacoes/produto/{produto_id}
+GET    /api/movimentacoes/cd/{cd_id}
+
+RASTREAMENTO (3 endpoints) - NOVO
+GET    /api/rastreamento/barcode/{codigo}
+GET    /api/rastreamento/produto/{id}
+GET    /api/rastreamento/pedido/{numero}
+
+═════════════════════════════════════════════════════════════════════════════
+
+PRÓXIMAS ETAPAS
+═════════════════════════════════════════════════════════════════════════════
+
+✅ FASE 1: SCHEMA DESIGN - CONCLUÍDA
+   └─ 15 tabelas, 27 índices, documentação completa
+
+⏳ FASE 2: IMPLEMENTAÇÃO - PRÓXIMA
+   └─ 16 controllers, 40+ endpoints, ~2 dias
+
+⏳ FASE 3: TESTES
+   └─ Unitários, integração, fluxo completo
+
+⏳ FASE 4: DEPLOY
+   └─ Produção
+
+═════════════════════════════════════════════════════════════════════════════
+
+Desenvolvido em: 13 de Novembro de 2025
+Versão: 2.0
+Status: ✅ SCHEMA PRONTO
+
+═════════════════════════════════════════════════════════════════════════════
