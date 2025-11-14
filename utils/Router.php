@@ -8,27 +8,22 @@ class Router {
     private $method;
     private $path;
 
+
     public function __construct() {
         $this->method = $_SERVER['REQUEST_METHOD'];
 
-        // normaliza barras e deixa tudo minúsculo
+        // normaliza tudo pra minúsculo
         $requestUri = strtolower(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
         $scriptName = strtolower(str_replace('\\', '/', $_SERVER['SCRIPT_NAME']));
 
-        // pega só o diretório do script
-        $basePath = rtrim(dirname($scriptName), '/');
+        $basePath = dirname($scriptName);
 
-        // remove o basePath do início da URI
-        if ($basePath !== '' && $basePath !== '/') {
-            $this->path = preg_replace('#^' . preg_quote($basePath, '#') . '#', '', $requestUri);
-        } else {
-            $this->path = $requestUri;
-        }
+        $this->path = preg_replace('#^' . $basePath . '#', '', $requestUri);
 
         if ($this->path === '') {
             $this->path = '/';
         }
-}
+    }
 
 
     public function route($method, $pattern, $callback) {

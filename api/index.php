@@ -16,12 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Inclusão de classes necessárias
-require_once __DIR__ . '/utils/Router.php';
-require_once __DIR__ . '/controllers/ContainerController.php';
-require_once __DIR__ . '/controllers/LoteController.php';
-require_once __DIR__ . '/controllers/ProdutoController.php';
-require_once __DIR__ . '/controllers/HistoricoController.php';
-require_once __DIR__ . '/controllers/DashboardController.php';
+require_once __DIR__ . '/../utils/Router.php';
+require_once __DIR__ . '/../controllers/ContainerController.php';
+require_once __DIR__ . '/../controllers/LoteController.php';
+require_once __DIR__ . '/../controllers/ProdutoController.php';
+require_once __DIR__ . '/../controllers/HistoricoController.php';
+require_once __DIR__ . '/../controllers/DashboardController.php';
 
 // Inicializar roteador
 $router = new Router();
