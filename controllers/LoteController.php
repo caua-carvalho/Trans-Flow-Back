@@ -23,7 +23,7 @@ class LoteController {
                 $query .= " WHERE container_id = :container_id";
             }
             
-            $query .= " ORDER BY data_envio DESC";
+            $query .= " ORDER BY data_criacao DESC";
             
             $stmt = $this->db->prepare($query);
             
