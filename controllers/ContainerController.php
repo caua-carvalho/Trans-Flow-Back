@@ -62,10 +62,10 @@ class ContainerController {
                       VALUES (:codigo, :status, :origem, :destino, NOW())";
             
             $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':codigo', $input['codigo']);
-            $stmt->bindParam(':status', $input['status'] ?? 'aguardando_coleta');
-            $stmt->bindParam(':origem', $input['origem'] ?? null);
-            $stmt->bindParam(':destino', $input['destino'] ?? null);
+            $stmt->bindValue(':codigo', $input['codigo']);
+            $stmt->bindValue(':status', $input['status'] ?? 'aguardando_coleta');
+            $stmt->bindValue(':origem', $input['origem'] ?? null);
+            $stmt->bindValue(':destino', $input['destino'] ?? null);
             
             if ($stmt->execute()) {
                 $id = $this->db->lastInsertId();

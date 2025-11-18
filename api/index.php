@@ -17,11 +17,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Inclusão de classes necessárias
 require_once __DIR__ . '/../utils/Router.php';
+
 require_once __DIR__ . '/../controllers/ContainerController.php';
 require_once __DIR__ . '/../controllers/LoteController.php';
 require_once __DIR__ . '/../controllers/ProdutoController.php';
 require_once __DIR__ . '/../controllers/HistoricoController.php';
 require_once __DIR__ . '/../controllers/DashboardController.php';
+require_once __DIR__ . '/../controllers/CentroDistribuicaoController.php';
+
+// ===== ROUTES: CENTROS DE DISTRIBUICAO =====
+$router->route('GET', '/centros-distribuicao', function() {
+    $controller = new CentroDistribuicaoController();
+    $controller->getAll();
+});
 
 // Inicializar roteador
 $router = new Router();
