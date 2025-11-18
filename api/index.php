@@ -25,14 +25,14 @@ require_once __DIR__ . '/../controllers/HistoricoController.php';
 require_once __DIR__ . '/../controllers/DashboardController.php';
 require_once __DIR__ . '/../controllers/CentroDistribuicaoController.php';
 
-// ===== ROUTES: CENTROS DE DISTRIBUICAO =====
+// Inicializar roteador
+$router = new Router();
+
+// ===== ROUTES: CENTROS DE DISTRIBUICAO =====Open. Azure. Service code. Hey, Cortana. Hey, Cortana. Tune into Mujhpe Naam message from exclusive actress Packing Sunny speaking as Associate Kumaraswamy's operation Shopping in town. Cortana. Hey, Cortana. Hey, Cortana. Hey, Cortana play. Play let me call you. Hey, Cortana. Hey, Cortana. C Drive. Pulling sucker. Close. Help. Hey, Cortana. Closes them and do them by saying you SFAM, racing, SSN. Window Machine does a. Hey, Cortana. Hey, Cortana. Play Let It Go. Pasta. What's up good for the director of searching for Newcastle? I like to go to the wedding in a machine. I bring something romance. Hey, Cortana. Mossadi Ko, do you have a search for me? A quizzes on my list. Youtube. Hey, Cortana. Please tell me. Hey, Cortana. Hey, Cortana. Hey, Cortana. Hey, Cortana. Hey, Cortana. Hey, Cortana. Hey, Cortana. Hey, Cortana. Hey, Cortana. Advancing that you last time. Sushi near Karma at 6:00 PM. Hey, Cortana. Hey, Cortana. Play send. Time was it done. Play Amanda. Hey, Cortana. Hey, Cortana. Hey, Cortana. Youtube. Hey, Cortana. Hey, Cortana. Hey, Cortana. Youtube. Can you sing open Shady Cow? We are simply kind of spots with usual location of cities individuals but only juggled for much of my fire abink. Like. Can you start? Hey, Cortana. Hey, Cortana. What's the weather? Like in HP. 
 $router->route('GET', '/centros-distribuicao', function() {
     $controller = new CentroDistribuicaoController();
     $controller->getAll();
 });
-
-// Inicializar roteador
-$router = new Router();
 
 // ===== ROUTES: CONTAINERS =====
 $router->route('GET', '/containers', function() {
